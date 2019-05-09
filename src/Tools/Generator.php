@@ -391,6 +391,10 @@ class Generator
             return false;
         }
 
+        if ($value && $type == 'array') {
+            return json_decode($value, true);
+        }
+
         if (isset($casts[$type])) {
             return $casts[$type]($value);
         }

@@ -1,29 +1,13 @@
 ```php
-
 $client = new \GuzzleHttp\Client();
-$response = $client->{{ strtolower($route['methods'][0]) }}("{{ $route['boundUri'] }}", [
-@if(!empty($route['headers']))
-    'headers' => [
-    @foreach($route['headers'] as $header => $value)
-        "{{$header}}" => "{{$value}}",
-    @endforeach
-    ],
-@endif
-@if(!empty($route['cleanQueryParameters']))
-    'query' => [
-    @foreach($route['cleanQueryParameters'] as $parameter => $value)
-        "{{$parameter}}" => "{{$value}}",
-    @endforeach
-    ],
-@endif
-@if(!empty($route['cleanBodyParameters']))
-    'json' => [
-    @foreach($route['cleanBodyParameters'] as $parameter => $value)
-        "{{$parameter}}" => "{{$value}}",
-    @endforeach
-    ],
-@endif
-]);
+@php
+    $options = array_filter([
+        'headers' => $route['headers'] ?? null,
+        'query'   => $route['cleanQueryParameters'] ?? null,
+        'json'    => $route['cleanBodyParameters'] ?? null,
+    ]);
+@endphp
+$response = $client->{{ strtolower($route['methods'][0]) }}("{{ $route['boundUri'] }}", {!! Symfony\Component\VarExporter\VarExporter::export($options) !!});
 $body = $response->getBody();
 print_r(json_decode((string) $body));
 ```
